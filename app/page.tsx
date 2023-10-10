@@ -1,9 +1,12 @@
-import Pricing from '@/components/Pricing';
 import {
   getSession,
   getSubscription,
   getActiveProductsWithPrices
 } from '@/app/supabase-server';
+
+import { redirect } from 'next/navigation';
+
+import Chat from '@/components/Chat';
 
 export default async function PricingPage() {
   const [session, products, subscription] = await Promise.all([
@@ -12,12 +15,19 @@ export default async function PricingPage() {
     getSubscription()
   ]);
 
+  const user = session?.user;
+
+  if (!session) {
+    return redirect('/signin');
+  }
+
   return (
-    <Pricing
-      session={session}
-      user={session?.user}
-      products={products}
-      subscription={subscription}
-    />
+    <html lang="en">
+      <body>
+        <main className="min-h-screen bg-white flex flex-col">
+          <Chat session={session}/>
+        </main>
+      </body>
+    </html>
   );
 }
